@@ -1,12 +1,12 @@
+// prova-banco-de-dados/db.js
 const mysql = require('mysql2/promise');
-require('dotenv').config(); // Adicione esta linha no topo se ainda não tiver
 
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || 'trolley.proxy.rlwy.net', // Fallback para localhost
-  user: process.env.MYSQLUSER || 'root',      // Fallback para seu usuário local
-  password: process.env.MYSQL_ROOT_PASSWORD || 'SswolwDlebjbAuznySNEUAeXHoIkETne',  // Fallback para sua senha local
-  database: process.env.MYSQL_DATABASE || 'railway', // Fallback para seu DB local
-  port: process.env.MYSQLPORT || 3306,        // Fallback para porta local
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD, // Garanta que este é o nome correto
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -18,7 +18,14 @@ pool.getConnection()
     connection.release();
   })
   .catch(err => {
-    console.error('Database connection failed via pool:', err);
+    console.error('Database connection failed via pool. Attempted Config:', {
+      host: process.env.MYSQLHOST,
+      user: process.env.MYSQLUSER,
+      database: process.env.MYSQLDATABASE,
+      port: process.env.MYSQLPORT,
+      password_provided_for_env_var: !!process.env.MYSQLPASSWORD
+    });
+    console.error('Original Error:', err);
   });
 
 module.exports = pool;
